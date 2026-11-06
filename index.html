@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101b35">
+<title>Le calendrier littéraire de l'Avent</title>
+<style>
+:root{
+  --night:#101b35;--night2:#182747;--gold:#f6cf79;--cream:#fff8e9;
+  --red:#a83d4d;--teal:#4f9b91;--muted:#cbd4e4;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;color:var(--cream);
+  font-family:Georgia,"Times New Roman",serif;
+  background:
+    radial-gradient(circle at 15% 12%,#31466d 0,transparent 28%),
+    radial-gradient(circle at 85% 25%,#263d60 0,transparent 30%),
+    linear-gradient(145deg,#0b1429,#172746 58%,#0b1429);
+  overflow-x:hidden;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background-image:
+    radial-gradient(2px 2px at 10% 20%,#fff 50%,transparent 60%),
+    radial-gradient(1px 1px at 30% 70%,#fff 50%,transparent 60%),
+    radial-gradient(2px 2px at 80% 15%,#fff 50%,transparent 60%),
+    radial-gradient(1px 1px at 65% 45%,#fff 50%,transparent 60%),
+    radial-gradient(2px 2px at 92% 80%,#fff 50%,transparent 60%);
+  background-size:280px 240px;
+}
+.snow{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.snow i{position:absolute;top:-12px;width:5px;height:5px;border-radius:50%;background:#fff;opacity:.7;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(110vh) translateX(35px)}}
+header{position:relative;z-index:2;text-align:center;padding:42px 18px 24px}
+.eyebrow{color:var(--gold);text-transform:uppercase;letter-spacing:.24em;font:700 .72rem Arial,sans-serif}
+h1{font-size:clamp(2.25rem,6vw,4.7rem);line-height:1.02;margin:13px 0 12px;text-shadow:0 5px 24px #0008}
+h1 span{color:var(--gold);font-style:italic}
+.subtitle{max-width:680px;margin:0 auto;color:var(--muted);font:1rem/1.6 Arial,sans-serif}
+.header-ornament{color:var(--gold);font-size:1.4rem;letter-spacing:.5em;margin-top:18px}
+main{position:relative;z-index:2;max-width:1120px;margin:auto;padding:12px 20px 60px}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:8px 0 18px;flex-wrap:wrap}
+.progress-wrap{flex:1;min-width:210px}
+.progress-label{display:flex;justify-content:space-between;color:var(--muted);font: .78rem Arial,sans-serif;margin-bottom:8px}
+.progress{height:8px;background:#ffffff1c;border-radius:20px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:20px;transition:width .4s}
+.reset{background:transparent;color:var(--muted);border:1px solid #ffffff42;padding:9px 13px;border-radius:20px;cursor:pointer;font: .78rem Arial,sans-serif}
+.reset:hover{border-color:var(--gold);color:var(--gold)}
+.calendar{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:13px}
+.door{
+  min-height:138px;position:relative;border:1px solid #f6cf7966;border-radius:15px;
+  color:var(--cream);cursor:pointer;overflow:hidden;
+  background:linear-gradient(145deg,#29466a,#172b4c 70%);
+  box-shadow:0 8px 22px #0004,inset 0 1px #ffffff30;
+  transition:transform .2s,box-shadow .2s,border-color .2s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px;
+}
+.door:nth-child(4n+1){background:linear-gradient(145deg,#8c3549,#57263d)}
+.door:nth-child(4n+2){background:linear-gradient(145deg,#286b68,#174747)}
+.door:nth-child(4n+3){background:linear-gradient(145deg,#a77b36,#694b2b)}
+.door:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 15px 28px #0007;border-color:var(--gold)}
+.door:focus-visible,.reset:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.door.opened{border-color:var(--gold);background:linear-gradient(145deg,#263957,#17243d)}
+.number{position:absolute;top:9px;left:12px;color:#fff9;font:700 .75rem Arial,sans-serif}
+.door-icon{font-size:2.2rem;filter:drop-shadow(0 3px 3px #0005)}
+.door-title{font-size:clamp(.82rem,1.5vw,1rem);text-align:center;line-height:1.2}
+.door-state{font: .65rem Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.door.opened .door-state{color:#b8e5d9}
+footer{text-align:center;color:#aebbd0;font: .78rem/1.6 Arial,sans-serif;padding:0 20px 35px;position:relative;z-index:2}
+footer strong{color:var(--gold)}
+.modal{display:none;position:fixed;inset:0;z-index:10;background:#050b18d9;backdrop-filter:blur(8px);padding:18px;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.panel{width:min(590px,100%);max-height:90vh;overflow:auto;position:relative;border:1px solid #f6cf7980;border-radius:22px;padding:30px;background:linear-gradient(145deg,#203655,#101b32);box-shadow:0 25px 90px #000b}
+.close{position:absolute;right:15px;top:12px;background:none;border:0;color:var(--muted);font-size:1.7rem;cursor:pointer}
+.day-kicker{color:var(--gold);font:700 .72rem Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.panel h2{font-size:2rem;margin:10px 35px 12px 0}
+.panel p{color:#e2e8f2;line-height:1.65}
+.question{font-size:1.16rem;color:var(--cream)!important}
+.answers{display:grid;gap:9px;margin:18px 0}
+.answer{border:1px solid #ffffff42;background:#ffffff0b;color:var(--cream);padding:12px 14px;border-radius:11px;text-align:left;cursor:pointer;font: .95rem/1.4 Arial,sans-serif}
+.answer:hover:not(:disabled){border-color:var(--gold);background:#ffffff16}
+.answer:disabled{cursor:default;opacity:.8}
+.answer.correct{background:#1d6554;border-color:#8ce0bd;opacity:1}
+.answer.wrong{background:#783846;border-color:#ff9ba7;opacity:1}
+.feedback{display:none;border-left:3px solid var(--gold);padding:10px 14px;margin-top:14px;background:#ffffff0b;border-radius:0 10px 10px 0;line-height:1.6}
+.feedback.show{display:block}
+.next{display:none;margin-top:18px;background:var(--gold);color:#1c2940;border:0;border-radius:22px;padding:11px 19px;font-weight:bold;cursor:pointer}
+.next.show{display:inline-block}
+.badge{display:inline-block;border:1px solid #f6cf7970;color:var(--gold);border-radius:20px;padding:5px 10px;font: .68rem Arial,sans-serif;text-transform:uppercase;letter-spacing:.1em}
+@media(max-width:760px){.calendar{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.door{min-height:120px}}
+@media(max-width:460px){header{padding-top:30px}.calendar{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.door{min-height:112px;padding:8px}.door-icon{font-size:1.8rem}.panel{padding:25px 20px}}
+</style>
+</head>
+<body>
+<div class="snow" id="snow" aria-hidden="true"></div>
+<header>
+  <div class="eyebrow">Une surprise par jour · Du 1er au 24 décembre</div>
+  <h1>Le calendrier <span>littéraire</span><br>de l’Avent</h1>
+  <p class="subtitle">24 rendez-vous pour explorer les genres littéraires, les récits, la poésie, les figures de style et les mots étonnants. Chaque porte cache une question ou un défi à relever !</p>
+  <div class="header-ornament">✦ ❄ ✦</div>
+</header>
+<main>
+  <div class="topline">
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Ta collection de découvertes</span><span id="count">0 / 24 portes ouvertes</span></div>
+      <div class="progress"><div class="progress-fill" id="progress"></div></div>
+    </div>
+    <button class="reset" id="reset" type="button">↻ Recommencer</button>
+  </div>
+  <section class="calendar" id="calendar" aria-label="Calendrier de l'Avent littéraire"></section>
+</main>
+<footer>24 découvertes de culture littéraire · <strong>Madame FERRARO</strong> ✨</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="panel">
+    <button class="close" id="close" aria-label="Fermer">×</button>
+    <div class="day-kicker" id="dayKicker">Porte n° 1</div>
+    <h2 id="modalTitle">Une surprise littéraire !</h2>
+    <div id="modalContent"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <button class="next" id="next" type="button">Continuer ✨</button>
+  </div>
+</div>
+
+<script>
+const surprises = [
+  {
+    "icon": "📚",
+    "title": "La grande famille des livres",
+    "type": "quiz",
+    "q": "Quel genre littéraire raconte une histoire inventée en prose, généralement assez longue, avec des personnages et des péripéties ?",
+    "a": [
+      "Le roman",
+      "La poésie",
+      "Le théâtre"
+    ],
+    "ok": 0,
+    "why": "Le roman est un récit de fiction en prose. Il peut raconter une aventure, une enquête, une histoire d’amour, un voyage…"
+  },
+  {
+    "icon": "🎭",
+    "title": "Sur les planches",
+    "type": "quiz",
+    "q": "Dans un texte de théâtre, comment appelle-t-on les indications qui précisent les gestes, les déplacements ou le ton des personnages ?",
+    "a": [
+      "Les didascalies",
+      "Les strophes",
+      "Les rimes"
+    ],
+    "ok": 0,
+    "why": "Les didascalies sont des indications de mise en scène. Elles ne sont généralement pas prononcées par les personnages."
+  },
+  {
+    "icon": "🪶",
+    "title": "La poésie en cadence",
+    "type": "quiz",
+    "q": "Comment appelle-t-on un groupe de vers formant un ensemble dans un poème ?",
+    "a": [
+      "Un paragraphe",
+      "Une strophe",
+      "Un chapitre"
+    ],
+    "ok": 1,
+    "why": "Une strophe est un groupe de vers séparé des autres par un blanc. Elle joue un rôle comparable à celui du paragraphe en prose."
+  },
+  {
+    "icon": "🦊",
+    "title": "La leçon de la fable",
+    "type": "quiz",
+    "q": "Comment appelle-t-on la leçon que l'on peut tirer d'une fable ?",
+    "a": [
+      "La morale",
+      "La didascalie",
+      "L'intrigue"
+    ],
+    "ok": 0,
+    "why": "La morale exprime l'enseignement ou la réflexion que propose la fable. Elle peut être placée au début ou à la fin du récit."
+  },
+  {
+    "icon": "🧭",
+    "title": "Qui raconte ?",
+    "type": "quiz",
+    "q": "Dans un récit, comment appelle-t-on celui qui raconte l'histoire ?",
+    "a": [
+      "L'éditeur",
+      "Le narrateur",
+      "Le lecteur"
+    ],
+    "ok": 1,
+    "why": "Le narrateur est la voix qui raconte. Il ne faut pas le confondre avec l'auteur, qui est la personne réelle ayant écrit l'œuvre."
+  },
+  {
+    "icon": "🔍",
+    "title": "Dans la tête du personnage",
+    "type": "quiz",
+    "q": "Quand le narrateur connaît les pensées et les sentiments de plusieurs personnages, quel point de vue adopte-t-il ?",
+    "a": [
+      "Un point de vue externe",
+      "Un point de vue interne",
+      "Un point de vue omniscient"
+    ],
+    "ok": 2,
+    "why": "Le point de vue omniscient donne au narrateur un savoir étendu : il peut connaître le passé, les pensées et les sentiments de différents personnages."
+  },
+  {
+    "icon": "🏛️",
+    "title": "Aux sources des récits",
+    "type": "quiz",
+    "q": "Comment appelle-t-on un récit traditionnel qui met en scène des dieux, des héros et qui cherche notamment à expliquer le monde ?",
+    "a": [
+      "Un mythe",
+      "Une nouvelle policière",
+      "Une autobiographie"
+    ],
+    "ok": 0,
+    "why": "Un mythe est un récit issu d'une tradition, souvent lié aux croyances d'une civilisation. Il met fréquemment en scène des dieux et des héros."
+  },
+  {
+    "icon": "🪞",
+    "title": "Récit de soi",
+    "type": "quiz",
+    "q": "Quel est le but principal d'une autobiographie ?",
+    "a": [
+      "Raconter sa propre vie",
+      "Raconter la vie d'un personnage imaginaire",
+      "Présenter des informations scientifiques"
+    ],
+    "ok": 0,
+    "why": "Dans une autobiographie, l'auteur raconte sa propre existence. Auteur, narrateur et personnage principal renvoient à la même personne."
+  },
+  {
+    "icon": "⚔️",
+    "title": "Le héros en action",
+    "type": "quiz",
+    "q": "Dans un récit, comment appelle-t-on l'événement qui vient bouleverser la situation de départ et lancer l'histoire ?",
+    "a": [
+      "Le dénouement",
+      "L'élément perturbateur",
+      "La morale"
+    ],
+    "ok": 1,
+    "why": "L'élément perturbateur rompt l'équilibre de la situation initiale et déclenche les péripéties."
+  },
+  {
+    "icon": "📜",
+    "title": "Le temps des histoires",
+    "type": "quiz",
+    "q": "Quel temps verbal est souvent utilisé dans un récit au passé pour décrire un décor ou une habitude ?",
+    "a": [
+      "L'imparfait",
+      "Le futur simple",
+      "Le passé antérieur"
+    ],
+    "ok": 0,
+    "why": "L'imparfait sert notamment à installer le cadre, décrire les personnages et exprimer des habitudes dans un récit au passé."
+  },
+  {
+    "icon": "🎼",
+    "title": "À l'écoute des vers",
+    "type": "quiz",
+    "q": "Comment appelle-t-on deux vers qui se terminent par des sons identiques ou proches ?",
+    "a": [
+      "Des rimes",
+      "Des didascalies",
+      "Des paragraphes"
+    ],
+    "ok": 0,
+    "why": "Les rimes sont des répétitions de sons en fin de vers. Elles peuvent suivre différentes organisations : plates, croisées ou embrassées."
+  },
+  {
+    "icon": "🧩",
+    "title": "Le récit à tiroirs",
+    "type": "quiz",
+    "q": "Comment appelle-t-on une histoire racontée à l'intérieur d'une autre histoire ?",
+    "a": [
+      "Un récit enchâssé",
+      "Une préface",
+      "Une strophe"
+    ],
+    "ok": 0,
+    "why": "Un récit enchâssé est inséré dans un récit-cadre. Le personnage qui raconte devient alors narrateur d'une histoire secondaire."
+  },
+  {
+    "icon": "🌙",
+    "title": "Image ou comparaison ?",
+    "type": "quiz",
+    "q": "« La lune est un grand lampion dans le ciel. » Quelle figure de style reconnais-tu ?",
+    "a": [
+      "Une comparaison",
+      "Une métaphore",
+      "Une personnification"
+    ],
+    "ok": 1,
+    "why": "C'est une métaphore : la lune est directement assimilée à un lampion, sans outil de comparaison comme « tel » ou « comme »."
+  },
+  {
+    "icon": "🌬️",
+    "title": "La nature prend la parole",
+    "type": "quiz",
+    "q": "« Les arbres chuchotent des secrets à la forêt. » Quelle figure de style est utilisée ?",
+    "a": [
+      "Une personnification",
+      "Une hyperbole",
+      "Un oxymore"
+    ],
+    "ok": 0,
+    "why": "C'est une personnification : les arbres accomplissent une action humaine, celle de chuchoter."
+  },
+  {
+    "icon": "🔥",
+    "title": "Toujours plus fort !",
+    "type": "quiz",
+    "q": "« Je t'ai attendu un million d'années ! » Quelle figure de style reconnais-tu ?",
+    "a": [
+      "Une anaphore",
+      "Une hyperbole",
+      "Une comparaison"
+    ],
+    "ok": 1,
+    "why": "C'est une hyperbole : l'exagération « un million d'années » amplifie l'attente pour produire un effet."
+  },
+  {
+    "icon": "❄️",
+    "title": "Deux contraires réunis",
+    "type": "quiz",
+    "q": "« Un silence assourdissant envahit la pièce. » Quelle figure de style associe deux termes contradictoires ?",
+    "a": [
+      "Un oxymore",
+      "Une métaphore",
+      "Une gradation"
+    ],
+    "ok": 0,
+    "why": "C'est un oxymore : « silence » et « assourdissant » rapprochent deux idées qui semblent opposées."
+  },
+  {
+    "icon": "🗝️",
+    "title": "Le mot mystérieux",
+    "type": "word",
+    "q": "Que signifie l'adjectif « énigmatique » ?",
+    "a": [
+      "Qui est mystérieux, difficile à comprendre",
+      "Qui est très bruyant",
+      "Qui est particulièrement joyeux"
+    ],
+    "ok": 0,
+    "why": "Énigmatique qualifie ce qui est mystérieux ou difficile à interpréter. Un sourire énigmatique laisse deviner un secret."
+  },
+  {
+    "icon": "🕯️",
+    "title": "Une atmosphère inquiétante",
+    "type": "word",
+    "q": "Que signifie l'adjectif « sinistre » ?",
+    "a": [
+      "Qui inspire la peur ou annonce un malheur",
+      "Qui est lumineux et rassurant",
+      "Qui est drôle et léger"
+    ],
+    "ok": 0,
+    "why": "Sinistre qualifie ce qui paraît menaçant, lugubre ou de mauvais augure. Un château sinistre peut donner des frissons."
+  },
+  {
+    "icon": "🌟",
+    "title": "Un personnage courageux",
+    "type": "word",
+    "q": "Que signifie l'adjectif « vaillant » ?",
+    "a": [
+      "Courageux et plein d'énergie",
+      "Maladroit et distrait",
+      "Triste et silencieux"
+    ],
+    "ok": 0,
+    "why": "Vaillant signifie courageux, brave. On peut parler d'un chevalier vaillant qui affronte le danger."
+  },
+  {
+    "icon": "🌀",
+    "title": "Un drôle de détour",
+    "type": "word",
+    "q": "Que signifie le nom « subterfuge » ?",
+    "a": [
+      "Un moyen habile pour tromper ou éviter une difficulté",
+      "Une fête organisée en secret",
+      "Un objet magique très ancien"
+    ],
+    "ok": 0,
+    "why": "Un subterfuge est une ruse, un moyen détourné utilisé pour parvenir à ses fins. Un personnage rusé peut imaginer un subterfuge."
+  },
+  {
+    "icon": "✍️",
+    "title": "Le défi de la métaphore",
+    "type": "challenge",
+    "q": "Invente une métaphore pour décrire la neige, sans utiliser les mots « comme » ou « tel ».
+Exemple de départ : « La neige est… »",
+    "why": "Une métaphore rapproche directement deux réalités. À toi de trouver une image originale : « La neige est un drap de lumière »."
+  },
+  {
+    "icon": "🎬",
+    "title": "Une scène en trois répliques",
+    "type": "challenge",
+    "q": "À deux, inventez un dialogue de trois répliques entre une sorcière pressée et un dragon enrhumé. Variez les verbes de parole !",
+    "why": "Vous pouvez employer : marmonner, s'exclamer, protester, chuchoter, répliquer… Faites entendre le caractère de chaque personnage."
+  },
+  {
+    "icon": "🔤",
+    "title": "La chasse aux allitérations",
+    "type": "challenge",
+    "q": "Imagine une phrase qui répète volontairement le son [s] pour évoquer un serpent ou un souffle. Puis lis-la à voix haute !",
+    "why": "Une allitération est la répétition d'un même son consonantique. Elle peut créer un effet sonore et renforcer une atmosphère."
+  },
+  {
+    "icon": "📖",
+    "title": "Le début d'une aventure",
+    "type": "challenge",
+    "q": "Écris deux phrases pour commencer un récit fantastique. Il faut un lieu inquiétant et un événement impossible à expliquer.",
+    "why": "Pour créer le mystère, installe un cadre précis puis introduis un élément étrange qui trouble le quotidien. Laisse planer une question dans l'esprit du lecteur."
+  }
+];
+
+const calendar=document.getElementById("calendar");
+const modal=document.getElementById("modal");
+const content=document.getElementById("modalContent");
+const feedback=document.getElementById("feedback");
+const next=document.getElementById("next");
+let current=0;
+let opened=JSON.parse(localStorage.getItem("aventLitteraireOpened")||"[]");
+
+function updateProgress(){
+  document.getElementById("count").textContent=`${opened.length} / 24 portes ouvertes`;
+  document.getElementById("progress").style.width=(opened.length/24*100)+"%";
+}
+function renderCalendar(){
+  calendar.innerHTML="";
+  surprises.forEach((s,i)=>{
+    const b=document.createElement("button");
+    b.className="door"+(opened.includes(i)?" opened":"");
+    b.type="button";
+    b.setAttribute("aria-label",`Ouvrir la porte ${i+1} : ${s.title}`);
+    b.innerHTML=`<span class="number">${String(i+1).padStart(2,"0")}</span><span class="door-icon">${opened.includes(i)?"✨":s.icon}</span><span class="door-title">${s.title}</span><span class="door-state">${opened.includes(i)?"Découvert":"Ouvrir la porte"}</span>`;
+    b.addEventListener("click",()=>openDoor(i));
+    calendar.appendChild(b);
+  });
+  updateProgress();
+}
+function openDoor(i){
+  current=i; const s=surprises[i];
+  document.getElementById("dayKicker").textContent=`Porte n° ${i+1} · ${s.type==="quiz"?"Question mystère":s.type==="word"?"Vocabulaire":s.type==="challenge"?"Défi de classe":"La grande finale"}`;
+  document.getElementById("modalTitle").textContent=s.title;
+  content.innerHTML="";
+  feedback.className="feedback";feedback.textContent="";
+  next.className="next";
+  if(s.type==="quiz"||s.type==="word"){
+    const p=document.createElement("p");p.className="question";p.textContent=s.q;content.appendChild(p);
+    const choices=document.createElement("div");choices.className="answers";
+    s.a.forEach((answer,j)=>{
+      const btn=document.createElement("button");btn.className="answer";btn.textContent=answer;
+      btn.addEventListener("click",()=>{
+        [...choices.children].forEach((el,k)=>{el.disabled=true;if(k===s.ok)el.classList.add("correct");else if(k===j)el.classList.add("wrong")});
+        feedback.textContent=(j===s.ok?"🎉 Bonne réponse ! ":"💡 Pas tout à fait ! ")+s.why;
+        feedback.classList.add("show");markOpened(i);next.classList.add("show");
+      });
+      choices.appendChild(btn);
+    });
+    content.appendChild(choices);
+  }else{
+    const p=document.createElement("p");p.className="question";p.textContent=s.q;content.appendChild(p);
+    const tip=document.createElement("p");tip.innerHTML='<span class="badge">À faire en classe</span>';content.appendChild(tip);
+    feedback.textContent=s.why;feedback.classList.add("show");
+    markOpened(i);next.classList.add("show");
+  }
+  modal.classList.add("show");
+}
+function markOpened(i){
+  if(!opened.includes(i)){opened.push(i);localStorage.setItem("aventLitteraireOpened",JSON.stringify(opened));renderCalendar();}
+}
+function closeModal(){modal.classList.remove("show")}
+document.getElementById("close").addEventListener("click",closeModal);
+modal.addEventListener("click",e=>{if(e.target===modal)closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+next.addEventListener("click",()=>{closeModal();if(opened.length===24){document.getElementById("modalTitle").textContent="Mission accomplie !";}});
+document.getElementById("reset").addEventListener("click",()=>{
+  if(confirm("Recommencer le calendrier ? Ta progression sera remise à zéro.")){
+    opened=[];localStorage.removeItem("aventLitteraireOpened");renderCalendar();
+  }
+});
+const snow=document.getElementById("snow");
+for(let i=0;i<38;i++){const flake=document.createElement("i");flake.style.left=Math.random()*100+"%";flake.style.animationDuration=(7+Math.random()*12)+"s";flake.style.animationDelay=(-Math.random()*18)+"s";flake.style.opacity=(.25+Math.random()*.65);flake.style.transform=`scale(${.5+Math.random()*1.2})`;snow.appendChild(flake)}
+renderCalendar();
+</script>
+</body>
+</html>
